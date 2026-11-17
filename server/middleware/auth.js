@@ -91,8 +91,39 @@ async function requireAuth(req, res, next) {
   }
 }
 
+/** Admin-only guard. Always used after requireAuth. */
+function requireAdmin(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Please sign in to continue.' });
+  }
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'You do not have permission to do that.' });
+  }
+  return next();
+}
+
+/** Emails listed in ADMIN_EMAILS are promoted to admin on sign-in. */
+function configuredAdminEmails() {
+  return (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+async function promoteIfConfigured(user) {
+  if (!user) return user;
+  if (user.role === 'admin') return user;
+  if (configuredAdminEmails().includes(String(user.email).toLowerCase())) {
+    user.role = 'admin';
+    await user.save();
+  }
+  return user;
+}
+
 module.exports = {
   requireAuth,
+  requireAdmin,
+  promoteIfConfigured,
   signToken,
   signMfaChallenge,
   verifyMfaChallenge,

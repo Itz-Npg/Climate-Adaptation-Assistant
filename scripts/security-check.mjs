@@ -3,6 +3,9 @@
  * Usage: node scripts/security-check.mjs [baseUrl]
  */
 const BASE = process.argv[2] || 'http://localhost:5000';
+// Each run uses its own client IP (the API trusts the proxy header) so repeated
+// runs do not inherit the previous run's rate-limit budget.
+const TEST_IP = `198.51.100.${Math.floor(Math.random() * 200) + 10}`;
 const ORIGIN = 'http://localhost:5173';
 const results = [];
 
@@ -23,6 +26,7 @@ async function json(path, { method = 'GET', body, cookie, origin = ORIGIN, heade
       'Content-Type': 'application/json',
       ...(origin ? { Origin: origin } : {}),
       ...(cookie ? { Cookie: cookie } : {}),
+      'X-Forwarded-For': TEST_IP,
       ...headers,
     },
     body: body ? JSON.stringify(body) : undefined,
@@ -174,7 +178,60 @@ const badCode = await json('/api/auth/mfa/verify', {
 });
 record('rejects an invalid MFA code', badCode.status === 401, `status ${badCode.status}`);
 
-// 9. Rate limiting on login
+// 10. Live geo API still works
+const geo = await json('/api/geo/search?q=Shimla&count=1');
+record('geo search works', geo.status === 200 && geo.data?.results?.length > 0, `status ${geo.status}`);
+
+// 11. Admin panel authorisation (requires the seeded demo admin)
+const adminLogin = await json('/api/auth/login', {
+  method: 'POST',
+  body: { email: 'demo@example.com', password: 'Demo1234' },
+});
+const isAdmin = adminLogin.status === 200 && adminLogin.data?.user?.role === 'admin';
+record('demo admin can sign in', isAdmin, `status ${adminLogin.status}`);
+
+if (isAdmin) {
+  const adminUsers = await json('/api/admin/users', { cookie: adminLogin.cookie });
+  record(
+    'admin can list users',
+    adminUsers.status === 200 && Array.isArray(adminUsers.data?.users),
+    `status ${adminUsers.status}`
+  );
+  record(
+    'admin payload exposes no secrets',
+    !/passwordHash|mfaSecret|mfaBackupCodes|resetToken/.test(JSON.stringify(adminUsers.data || {})),
+    ''
+  );
+
+  const forbidden = await json('/api/admin/users', { cookie: sessionCookie });
+  record('blocks non-admin access', forbidden.status === 403, `status ${forbidden.status}`);
+
+  const adminId = adminLogin.data.user.id;
+  const selfRole = await json(`/api/admin/users/${adminId}/role`, {
+    method: 'PATCH',
+    cookie: adminLogin.cookie,
+    body: { role: 'user' },
+  });
+  record('blocks self role change', selfRole.status === 400, `status ${selfRole.status}`);
+
+  const selfDelete = await json(`/api/admin/users/${adminId}`, {
+    method: 'DELETE',
+    cookie: adminLogin.cookie,
+  });
+  record('blocks self deletion', selfDelete.status === 400, `status ${selfDelete.status}`);
+
+  const badId = await json('/api/admin/users/not-a-real-id', { cookie: adminLogin.cookie });
+  record('validates user ids', badId.status === 400, `status ${badId.status}`);
+
+  const badRole = await json(`/api/admin/users/${adminId}/role`, {
+    method: 'PATCH',
+    cookie: adminLogin.cookie,
+    body: { role: 'superuser' },
+  });
+  record('rejects unknown roles', badRole.status === 400, `status ${badRole.status}`);
+}
+
+// 12. Rate limiting on login (runs last: it consumes the failed-attempt budget)
 let limited = 0;
 for (let index = 0; index < 26; index += 1) {
   const attempt = await json('/api/auth/login', {
@@ -187,10 +244,6 @@ for (let index = 0; index < 26; index += 1) {
   }
 }
 record('rate limits login attempts', limited > 0, limited ? `429 after ${limited} attempts` : 'never limited');
-
-// 10. Live geo API still works
-const geo = await json('/api/geo/search?q=Shimla&count=1');
-record('geo search works', geo.status === 200 && geo.data?.results?.length > 0, `status ${geo.status}`);
 
 const failed = results.filter((item) => !item.pass);
 console.log(`\n${results.length - failed.length}/${results.length} checks passed`);

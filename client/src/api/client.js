@@ -47,6 +47,15 @@ export const planApi = {
   remove: (id) => api.delete(`/plans/${id}`),
 };
 
+export const adminApi = {
+  stats: () => api.get('/admin/stats'),
+  users: (params) => api.get('/admin/users', { params }),
+  user: (id) => api.get(`/admin/users/${id}`),
+  setRole: (id, role) => api.patch(`/admin/users/${id}/role`, { role }),
+  resetMfa: (id) => api.post(`/admin/users/${id}/reset-mfa`),
+  remove: (id) => api.delete(`/admin/users/${id}`),
+};
+
 export const geoApi = {
   search: (query, count = 6) => api.get('/geo/search', { params: { q: query, count } }),
   profile: (lat, lon) => api.get('/geo/profile', { params: { lat, lon } }),

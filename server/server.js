@@ -13,6 +13,7 @@ const riskRoutes = require('./routes/riskRoutes');
 const planRoutes = require('./routes/planRoutes');
 const comparisonRoutes = require('./routes/comparisonRoutes');
 const geoRoutes = require('./routes/geoRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 const { blockInjection, csrfProtection, rateLimit, getAllowedOrigins } = require('./middleware/security');
 const { assertJwtSecret } = require('./middleware/auth');
@@ -91,6 +92,7 @@ app.use('/api/risks', riskRoutes);
 app.use('/api/plans', planRoutes);
 app.use('/api/comparisons', comparisonRoutes);
 app.use('/api/geo', geoRoutes);
+app.use('/api/admin', adminRoutes);
 
 // In production the built React app is served from the same origin.
 const clientDist = path.join(__dirname, '..', 'client', 'dist');

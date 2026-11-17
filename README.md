@@ -322,3 +322,27 @@ The build and the API were checked locally:
 - Client build passes on Vite 8 with no source maps and no oversized bundle warnings.
 
 Add your own `MONGODB_URI` before presenting the project so data survives a restart.
+
+## 16. Demo account, seed data and admin panel
+
+```bash
+npm run seed              # create demo@example.com with sample data (skips if it exists)
+npm run seed -- --reset   # replace the demo data
+npm run security:check    # 26 API security checks
+```
+
+Demo login: **demo@example.com / Demo1234** — three assessments (Kochi, Phagwara, Shimla, scored with
+live weather), an adaptation plan with five tasks, and a Kochi vs Shimla comparison. The seed script
+drives the public API, so it works with the in-memory development database and MongoDB Atlas alike.
+
+Roles: `User.role` is `user` or `admin`. Emails listed in `ADMIN_EMAILS` (server/.env) are promoted on
+sign-in; the demo account is listed there so the panel can be demonstrated.
+
+Admin panel at `/admin` (admin accounts only):
+
+- platform totals — users, admins, new this week, assessments, plans, comparisons
+- searchable, paginated user list with per-user record counts and MFA status
+- promote / demote roles, clear a lost two-factor device, delete a user and all of their data
+- guards, all enforced on the server: `requireAuth` + `requireAdmin` on every admin route, no
+  self-role change, no self deletion, the last admin cannot be removed, Mongo id validation,
+  request validation, a write rate limit, and every action logged with the actor's masked email

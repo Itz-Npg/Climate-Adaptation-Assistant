@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -12,6 +13,7 @@ import Planner from './pages/Planner';
 import Compare from './pages/Compare';
 import MapExplorer from './pages/MapExplorer';
 import Security from './pages/Security';
+import Admin from './pages/Admin';
 import Team from './pages/Team';
 import NotFound from './pages/NotFound';
 
@@ -64,6 +66,14 @@ export default function App() {
             <ProtectedRoute>
               <Security />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
           }
         />
         <Route path="*" element={<NotFound />} />

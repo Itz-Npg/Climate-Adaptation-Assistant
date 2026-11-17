@@ -59,6 +59,12 @@ export default function Navbar() {
               <Link to="/dashboard" className="btn-outline btn-sm">
                 Dashboard
               </Link>
+              {user.role === 'admin' ? (
+                <Link to="/admin" className="btn-ghost btn-sm">
+                  <ShieldCheck className="h-4 w-4" aria-hidden="true" />
+                  Admin
+                </Link>
+              ) : null}
               <Link
                 to="/security"
                 className="rounded-lg p-2 text-muted hover:bg-leaf hover:text-forest-700"
@@ -121,6 +127,11 @@ export default function Navbar() {
                   <Link to="/dashboard" className="btn-outline btn-sm">
                     Dashboard
                   </Link>
+                  {user.role === 'admin' ? (
+                    <Link to="/admin" className="btn-outline btn-sm">
+                      Admin panel
+                    </Link>
+                  ) : null}
                   <Link to="/security" className="btn-outline btn-sm">
                     Account security
                   </Link>

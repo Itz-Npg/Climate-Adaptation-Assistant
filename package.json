@@ -8,6 +8,8 @@
     "dev": "concurrently -n server,client -c green,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "server": "npm run dev --prefix server",
     "client": "npm run dev --prefix client",
+    "seed": "node scripts/seed-demo.mjs",
+    "security:check": "node scripts/security-check.mjs",
     "build": "npm run build --prefix client",
     "start": "npm start --prefix server"
   },

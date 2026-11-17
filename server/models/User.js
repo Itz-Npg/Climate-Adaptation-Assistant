@@ -24,6 +24,12 @@ const userSchema = new mongoose.Schema(
     },
     resetTokenHash: { type: String, default: null, select: false },
     resetTokenExpires: { type: Date, default: null, select: false },
+    role: {
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',
+      index: true,
+    },
     mfaEnabled: { type: Boolean, default: false },
     mfaSecret: { type: String, default: null, select: false },
     mfaPendingSecret: { type: String, default: null, select: false },
@@ -48,6 +54,7 @@ userSchema.methods.toPublicJSON = function toPublicJSON() {
     id: this._id.toString(),
     name: this.name,
     email: this.email,
+    role: this.role || 'user',
     mfaEnabled: Boolean(this.mfaEnabled),
     createdAt: this.createdAt,
   };

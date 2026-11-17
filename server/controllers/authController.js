@@ -6,6 +6,7 @@ const {
   signMfaChallenge,
   verifyMfaChallenge,
   cookieOptions,
+  promoteIfConfigured,
   COOKIE_NAME,
 } = require('../middleware/auth');
 const {
@@ -37,6 +38,8 @@ const register = asyncHandler(async (req, res) => {
     passwordHash,
   });
 
+  await promoteIfConfigured(user);
+
   const token = signToken(user, true);
   res.cookie(COOKIE_NAME, token, cookieOptions(true));
   return res.status(201).json({ user: user.toPublicJSON() });
@@ -54,6 +57,8 @@ const login = asyncHandler(async (req, res) => {
   if (!matches) {
     return res.status(401).json({ message: 'Email or password is incorrect.' });
   }
+
+  await promoteIfConfigured(user);
 
   // Password is correct, but a second factor is required before a session is issued.
   if (user.mfaEnabled) {
