@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-bold tracking-tight text-ink;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-forest-500 ring-offset-2 ring-offset-white;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    @apply rounded-2xl border border-line bg-white p-6 shadow-card;
+  }
+
+  .card-soft {
+    @apply rounded-3xl border border-forest-100 bg-leaf/70 p-6 sm:p-8;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center rounded-full bg-leaf px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-forest-700;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-ink;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-ink placeholder:text-muted/70 transition focus:border-forest-400 focus:outline-none focus:ring-2 focus:ring-forest-200;
+  }
+
+  .select {
+    @apply input appearance-none bg-[url("data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2020%2020%27%20fill%3D%27%2361736a%27%3E%3Cpath%20d%3D%27M5.5%207.5L10%2012l4.5-4.5z%27/%3E%3C/svg%3E")] bg-[length:20px_20px] bg-[right_0.75rem_center] bg-no-repeat pr-10;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply btn bg-forest-600 text-white hover:bg-forest-700 active:bg-forest-800;
+  }
+
+  .btn-outline {
+    @apply btn border border-forest-600 bg-white text-forest-700 hover:bg-forest-50;
+  }
+
+  .btn-ghost {
+    @apply btn text-forest-700 hover:bg-forest-50;
+  }
+
+  .btn-danger {
+    @apply btn border border-red-200 bg-white text-red-600 hover:bg-red-50;
+  }
+
+  .btn-sm {
+    @apply px-3.5 py-1.5 text-xs;
+  }
+
+  .alert {
+    @apply rounded-xl border px-4 py-3 text-sm;
+  }
+
+  .alert-error {
+    @apply alert border-red-200 bg-red-50 text-red-700;
+  }
+
+  .alert-success {
+    @apply alert border-forest-200 bg-forest-50 text-forest-800;
+  }
+
+  .alert-info {
+    @apply alert border-line bg-canvas text-muted;
+  }
+
+  .table-row-line {
+    @apply border-t border-line;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-line/70;
+  }
+}
+
+/* Leaflet inherits the app typography instead of its own stack. */
+.leaflet-container {
+  font-family: inherit;
+  background: #eef4ee;
+}
+
+.leaflet-container a {
+  color: #26563c;
+}
+
+.toast {
+  animation: toast-in 180ms ease-out;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Respect the user's reduced-motion preference across the whole app. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .toast {
+    animation: none;
+  }
+}

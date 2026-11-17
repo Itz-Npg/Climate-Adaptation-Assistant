@@ -1,0 +1,11 @@
+# Climate Adaptation Assistant
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /risk-checker
+Disallow: /planner
+Disallow: /compare
+Disallow: /reset-password
+
+Sitemap: https://climate-adaptation-assistant.example/sitemap.xml
