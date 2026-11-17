@@ -82,7 +82,13 @@ function csrfProtection(req, res, next) {
  * Small in-memory fixed-window rate limiter.
  * rateLimit({ windowMs, max, keyPrefix })
  */
-function rateLimit({ windowMs = 60 * 1000, max = 100, message, keyPrefix = 'default' } = {}) {
+function rateLimit({
+  windowMs = 60 * 1000,
+  max = 100,
+  message,
+  keyPrefix = 'default',
+  skipSuccessful = false,
+} = {}) {
   const buckets = new Map();
 
   const timer = setInterval(() => {
@@ -105,6 +111,17 @@ function rateLimit({ windowMs = 60 * 1000, max = 100, message, keyPrefix = 'defa
     }
 
     entry.count += 1;
+
+    // Successful sign-ins should not use up the failed-attempt budget.
+    if (skipSuccessful) {
+      res.on('finish', () => {
+        if (res.statusCode < 400) {
+          const bucket = buckets.get(key);
+          if (bucket) bucket.count = Math.max(0, bucket.count - 1);
+        }
+      });
+    }
+
     if (entry.count > max) {
       const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
       res.set('Retry-After', String(retryAfter));

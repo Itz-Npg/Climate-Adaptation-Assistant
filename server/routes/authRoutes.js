@@ -11,7 +11,8 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   keyPrefix: 'auth',
-  message: 'Too many attempts. Please wait 15 minutes and try again.',
+  skipSuccessful: true,
+  message: 'Too many failed sign-in attempts. Please wait 15 minutes and try again.',
 });
 
 const registerLimiter = rateLimit({
