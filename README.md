@@ -1,6 +1,6 @@
 # Climate Adaptation Assistant
 
-A full-stack student project by **Aaditya Bhattarai**, **Shivanshu Thakur** and **Ritik Sharma** (WS Section).
+A full-stack student project by **Aaditya  Bhattarai**, **Shivanshu Thakur** and **Ritik Sharma** (WS Section).
 
 The application helps a household understand four local climate hazards — extreme heat, flooding,
 drought and water scarcity — save illustrative risk assessments, build an adaptation plan with
