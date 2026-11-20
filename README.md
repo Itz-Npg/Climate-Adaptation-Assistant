@@ -11,7 +11,7 @@ bcrypt password hashing and user-scoped data access.
 
 ---
 
-## 1. Stack
+## 1. Stack 
 
 | Layer | Technology |
 | --- | --- |
